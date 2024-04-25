@@ -1,0 +1,17 @@
+# POST http://localhost:5001/api/user/adduser HTTP/1.1
+# content-type: application/json
+
+# {
+        
+#         "user_name": "Ramesh",
+#         "user_email": "ungabuna@xyz.com",
+#         "user_dob": "2012-01-25",
+#         "user_gender": "male"
+        
+# }
+
+
+
+
+GET http://localhost:5001/api/user/viewuser
+Content-Type: application/json

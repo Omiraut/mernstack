@@ -1,10 +1,25 @@
 const bcrypt = require("bcryptjs");
-
 const express = require("express");
 const router = express.Router();
-
 const User = require("../models/user");
 const { json } = require("body-parser");
+const path = require("path");
+const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: "./uploads/",
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + "_" + Date.now() + ".png");
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10000000 },
+});
+
+router.post("/uploadimage", upload.single("image"), async (req, res) => {
+  res.json("File uploaded successfuly");
+});
 // for posting data
 // http://localhost:5001/api/user/adduser
 router.post("/adduser", async (req, res) => {
@@ -44,15 +59,27 @@ router.get("/getbyid/:id", async (req, res) => {
   }
 });
 //localhost:5001/api/user/updateuserbyid/:id
-http: router.put("/updateuserbyid/:id", async (req, res) => {
+router.put("/updateuserbyid/:id", async (req, res) => {
   const id = req.params.id;
   try {
     const user = await User.findByIdAndUpdate(
       id,
-      { $set: req.body },
+      { $set: req.body }, // this $set used for updating specific data received from request
       { new: true }
     );
     res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+});
+//localhost:5001/api/user/deleteuser/:id
+router.delete("/deleteuser/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const user = await User.findByIdAndDelete(id);
+    res
+      .status(200)
+      .json({ message: "user is deleted successfuly", value: user });
   } catch (error) {
     res.status(500).json({ error: error });
   }
